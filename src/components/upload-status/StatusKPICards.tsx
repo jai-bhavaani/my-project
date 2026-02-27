@@ -2,7 +2,13 @@ import React from 'react';
 import './StatusKPICards.css';
 import { Clock, CheckCircle, XCircle } from 'lucide-react';
 
-export const StatusKPICards: React.FC = () => {
+interface StatusKPICardsProps {
+    pendingCount: number;
+    approvedCount: number;
+    rejectedCount: number;
+}
+
+export const StatusKPICards: React.FC<StatusKPICardsProps> = ({ pendingCount, approvedCount, rejectedCount }) => {
     return (
         <div className="kpi-cards">
 
@@ -13,7 +19,7 @@ export const StatusKPICards: React.FC = () => {
                         <Clock size={20} />
                     </div>
                 </div>
-                <div className="kpi-card__value">2</div>
+                <div className="kpi-card__value">{pendingCount}</div>
                 <p className="kpi-card__trend">In queue right now</p>
             </div>
 
@@ -24,7 +30,7 @@ export const StatusKPICards: React.FC = () => {
                         <CheckCircle size={20} />
                     </div>
                 </div>
-                <div className="kpi-card__value">14</div>
+                <div className="kpi-card__value">{approvedCount}</div>
                 <p className="kpi-card__trend positive">Available in Marketplace</p>
             </div>
 
@@ -35,7 +41,7 @@ export const StatusKPICards: React.FC = () => {
                         <XCircle size={20} />
                     </div>
                 </div>
-                <div className="kpi-card__value">1</div>
+                <div className="kpi-card__value">{rejectedCount}</div>
                 <p className="kpi-card__trend negative">Action required</p>
             </div>
 

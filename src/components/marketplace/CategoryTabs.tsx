@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './CategoryTabs.css';
 
 const CATEGORIES = [
@@ -10,16 +10,19 @@ const CATEGORIES = [
     "Lab Manuals"
 ];
 
-export const CategoryTabs: React.FC = () => {
-    const [activeCategory, setActiveCategory] = useState("All");
+interface CategoryTabsProps {
+    activeCategory: string;
+    onCategoryChange: (category: string) => void;
+}
 
+export const CategoryTabs: React.FC<CategoryTabsProps> = ({ activeCategory, onCategoryChange }) => {
     return (
         <div className="category-tabs">
             {CATEGORIES.map((category) => (
                 <button
                     key={category}
                     className={`category-tab ${activeCategory === category ? 'active' : ''}`}
-                    onClick={() => setActiveCategory(category)}
+                    onClick={() => onCategoryChange(category)}
                 >
                     {category}
                 </button>

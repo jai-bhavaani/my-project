@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './StatusTable.css';
 import { ExternalLink, CheckCircle, Clock, XCircle } from 'lucide-react';
 
-interface UploadStatusItem {
+export interface UploadStatusItem {
     id: string;
     date: string;
     subject: string;
@@ -13,36 +13,7 @@ interface UploadStatusItem {
     reason?: string;
 }
 
-const MOCK_DATA: UploadStatusItem[] = [
-    {
-        id: 'req-1',
-        date: 'Oct 24, 2024',
-        subject: 'Computer Networks',
-        type: 'PYQ',
-        title: 'Mid-Sem 2023 Solved Paper',
-        url: '#',
-        status: 'pending'
-    },
-    {
-        id: 'req-2',
-        date: 'Oct 20, 2024',
-        subject: 'Data Structures',
-        type: 'Notes',
-        title: 'Graphs & Trees Comprehensive Notes',
-        url: '#',
-        status: 'approved'
-    },
-    {
-        id: 'req-3',
-        date: 'Oct 15, 2024',
-        subject: 'Operating Systems',
-        type: 'Video',
-        title: 'Deadlock Handling Tutorial (Hindi)',
-        url: '#',
-        status: 'rejected',
-        reason: 'Link requires Google Drive access request'
-    }
-];
+
 
 const getTypeColor = (type: UploadStatusItem['type']) => {
     switch (type) {
@@ -80,9 +51,12 @@ const StatusBadge: React.FC<{ status: UploadStatusItem['status'], reason?: strin
     );
 };
 
-export const StatusTable: React.FC = () => {
-    const [items] = useState<UploadStatusItem[]>(MOCK_DATA);
+interface StatusTableProps {
+    items: UploadStatusItem[];
+    loading?: boolean;
+}
 
+export const StatusTable: React.FC<StatusTableProps> = ({ items, loading = false }) => {
     return (
         <div className="status-table-wrapper">
             <table className="status-table">
@@ -96,7 +70,13 @@ export const StatusTable: React.FC = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {items.length === 0 ? (
+                    {loading ? (
+                        <tr>
+                            <td colSpan={5} className="empty-state">
+                                Loading your uploads...
+                            </td>
+                        </tr>
+                    ) : items.length === 0 ? (
                         <tr>
                             <td colSpan={5} className="empty-state">
                                 You haven't uploaded any resources yet.

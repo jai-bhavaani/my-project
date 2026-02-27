@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './AdminTable.css';
 import { ExternalLink, Check, X } from 'lucide-react';
 
-interface AdminQueueItem {
+export interface AdminQueueItem {
     id: string;
     date: string;
     studentName: string;
@@ -13,48 +13,6 @@ interface AdminQueueItem {
     url: string;
 }
 
-const MOCK_DATA: AdminQueueItem[] = [
-    {
-        id: 'req-1',
-        date: 'Oct 24, 2024',
-        studentName: 'Ravi Patel',
-        studentEmail: 'ravi.p@student.univ.edu',
-        subject: 'Computer Networks',
-        type: 'PYQ',
-        title: 'Mid-Sem 2023 Solved Paper',
-        url: '#'
-    },
-    {
-        id: 'req-2',
-        date: 'Oct 24, 2024',
-        studentName: 'Shreya Iyer',
-        studentEmail: 'shreya.i@student.univ.edu',
-        subject: 'Data Structures',
-        type: 'Notes',
-        title: 'Graphs & Trees Comprehensive Notes',
-        url: '#'
-    },
-    {
-        id: 'req-3',
-        date: 'Oct 23, 2024',
-        studentName: 'Aman Singh',
-        studentEmail: 'aman.s@student.univ.edu',
-        subject: 'Operating Systems',
-        type: 'Video',
-        title: 'Deadlock Handling Tutorial (Hindi)',
-        url: '#'
-    },
-    {
-        id: 'req-4',
-        date: 'Oct 23, 2024',
-        studentName: 'Tanvi G.',
-        studentEmail: 'tanvi.g@student.univ.edu',
-        subject: 'Software Engineering',
-        type: 'Bank',
-        title: 'Unit 1-4 Important Questions List',
-        url: '#'
-    }
-];
 
 const getTypeColor = (type: AdminQueueItem['type']) => {
     switch (type) {
@@ -67,15 +25,13 @@ const getTypeColor = (type: AdminQueueItem['type']) => {
     }
 };
 
-export const AdminTable: React.FC = () => {
-    const [items, setItems] = useState<AdminQueueItem[]>(MOCK_DATA);
+interface AdminTableProps {
+    items: AdminQueueItem[];
+    loading?: boolean;
+    onAction: (id: string, action: 'approved' | 'rejected') => void;
+}
 
-    const handleAction = (id: string, _action: 'approve' | 'reject') => {
-        // In a real app, this would be an API call updating the database.
-        // For now, we simulate moderation by removing the item from the queue list.
-        setItems((prev) => prev.filter(item => item.id !== id));
-    };
-
+export const AdminTable: React.FC<AdminTableProps> = ({ items, loading, onAction }) => {
     return (
         <div className="admin-table-wrapper">
             <table className="admin-table">
@@ -89,7 +45,13 @@ export const AdminTable: React.FC = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {items.length === 0 ? (
+                    {loading ? (
+                        <tr>
+                            <td colSpan={5} className="admin-empty-state">
+                                Loading moderation queue...
+                            </td>
+                        </tr>
+                    ) : items.length === 0 ? (
                         <tr>
                             <td colSpan={5} className="admin-empty-state">
                                 No resources pending moderation. Great job!
@@ -129,14 +91,14 @@ export const AdminTable: React.FC = () => {
                                         </a>
                                         <button
                                             className="admin-btn-action admin-btn-reject"
-                                            onClick={() => handleAction(item.id, 'reject')}
+                                            onClick={() => onAction(item.id, 'rejected')}
                                             title="Reject"
                                         >
                                             <X size={18} />
                                         </button>
                                         <button
                                             className="admin-btn-action admin-btn-approve"
-                                            onClick={() => handleAction(item.id, 'approve')}
+                                            onClick={() => onAction(item.id, 'approved')}
                                             title="Approve"
                                         >
                                             <Check size={18} />

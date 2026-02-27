@@ -1,21 +1,71 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './ResourceMarketplace.css';
 import { CategoryTabs } from './CategoryTabs';
 import type { ResourceData } from './ResourceCard';
 import { ResourceCard } from './ResourceCard';
 import { RightSidebar } from './RightSidebar';
 import { Pagination } from './Pagination';
-
-const DEMO_RESOURCES: ResourceData[] = [
-    { id: '1', type: 'Notes', title: 'Unit 2: OS Process Management Detailed Notes (Handwritten)', subject: 'Operating Systems', uploader: 'Ankit Kumar', downloads: 1240 },
-    { id: '2', type: 'PYQ', title: 'Computer Networks End Semester 2023', subject: 'Computer Networks', uploader: 'Priya S.', downloads: 892 },
-    { id: '3', type: 'Video', title: 'Complete Guide to B-Trees and AVL Trees', subject: 'Data Structures', uploader: 'Rahul M.', downloads: 2150 },
-    { id: '4', type: 'Bank', title: 'DBMS Normalization Practice Set', subject: 'Database Management', uploader: 'Prof. Sharma', downloads: 540 },
-    { id: '5', type: 'Lab', title: 'Java Multithreading Lab Assignments (1-5)', subject: 'Object Oriented Prog.', uploader: 'Neha G.', downloads: 310 },
-    { id: '6', type: 'Notes', title: 'Software Engineering Agile Methodologies', subject: 'Software Engineering', uploader: 'Vikram', downloads: 670 }
-];
+import { supabase } from '../../lib/supabase';
 
 export const ResourceMarketplace: React.FC = () => {
+    const [activeCategory, setActiveCategory] = useState("All");
+    const [resources, setResources] = useState<ResourceData[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchResources();
+    }, [activeCategory]);
+
+    const fetchResources = async () => {
+        setLoading(true);
+        try {
+            let query = supabase
+                .from('resources')
+                .select(`
+                    id, 
+                    type, 
+                    title, 
+                    subject, 
+                    url,
+                    uploader:profiles(full_name)
+                `)
+                .eq('status', 'approved')
+                .order('created_at', { ascending: false });
+
+            // Apply category filter if not "All"
+            if (activeCategory !== 'All') {
+                // Map category label back to concise DB type if needed
+                let dbType = activeCategory;
+                if (activeCategory === 'Handwritten Notes') dbType = 'Notes';
+                if (activeCategory === 'Previous Year Papers') dbType = 'PYQ';
+                if (activeCategory === 'Question Banks') dbType = 'Bank';
+                if (activeCategory === 'Video References') dbType = 'Video';
+                if (activeCategory === 'Lab Manuals') dbType = 'Lab';
+
+                query = query.eq('type', dbType);
+            }
+
+            const { data, error } = await query;
+            if (error) throw error;
+
+            if (data) {
+                const formattedData: ResourceData[] = data.map((item: any) => ({
+                    id: item.id,
+                    type: item.type as any,
+                    title: item.title,
+                    subject: item.subject,
+                    url: item.url,
+                    uploader: item.uploader?.full_name || 'Anonymous',
+                    downloads: Math.floor(Math.random() * 500) + 10 // Mock download count for UI
+                }));
+                setResources(formattedData);
+            }
+        } catch (error) {
+            console.error('Error fetching resources:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
     return (
         <div className="marketplace">
             <div className="marketplace__header">
@@ -28,14 +78,27 @@ export const ResourceMarketplace: React.FC = () => {
             <div className="marketplace__layout">
                 <div className="marketplace__main">
                     {/* Category Tabs */}
-                    <CategoryTabs />
+                    <CategoryTabs
+                        activeCategory={activeCategory}
+                        onCategoryChange={setActiveCategory}
+                    />
 
                     {/* Resource Grid */}
-                    <div className="resource-grid">
-                        {DEMO_RESOURCES.map((res) => (
-                            <ResourceCard key={res.id} data={res} />
-                        ))}
-                    </div>
+                    {loading ? (
+                        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)' }}>
+                            Loading resources...
+                        </div>
+                    ) : resources.length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: '3rem', color: 'var(--color-text-secondary)' }}>
+                            No approved resources found for this category.
+                        </div>
+                    ) : (
+                        <div className="resource-grid">
+                            {resources.map((res) => (
+                                <ResourceCard key={res.id} data={res} />
+                            ))}
+                        </div>
+                    )}
 
                     {/* Pagination */}
                     <Pagination />
