@@ -9,6 +9,7 @@ interface LoginFormProps {
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
     const [isSignUp, setIsSignUp] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -33,7 +34,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
                 // 2. Insert into profiles table
                 if (data.user) {
                     const { error: profileError } = await supabase.from('profiles').insert([
-                        { id: data.user.id, full_name: fullName, role: 'student' }
+                        { id: data.user.id, full_name: fullName, role: isAdmin ? 'admin' : 'student' }
                     ]);
 
                     if (profileError) {
@@ -68,7 +69,25 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
                     <BookOpen className="login-form__logo-icon" size={32} />
                     <span>StudyHub</span>
                 </div>
-                <h1 className="login-form__title">{isSignUp ? 'Create an Account' : 'Student Login'}</h1>
+
+                <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', margin: '1rem 0' }}>
+                    <button
+                        type="button"
+                        onClick={() => setIsAdmin(false)}
+                        style={{ padding: '0.4rem 1.2rem', borderRadius: '20px', border: '1px solid #E2E8F0', background: !isAdmin ? '#1E293B' : 'transparent', color: !isAdmin ? 'white' : '#64748B', fontWeight: !isAdmin ? 600 : 400, cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px' }}
+                    >
+                        Student
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setIsAdmin(true)}
+                        style={{ padding: '0.4rem 1.2rem', borderRadius: '20px', border: '1px solid #E2E8F0', background: isAdmin ? '#1E293B' : 'transparent', color: isAdmin ? 'white' : '#64748B', fontWeight: isAdmin ? 600 : 400, cursor: 'pointer', transition: 'all 0.2s', fontSize: '14px' }}
+                    >
+                        Admin
+                    </button>
+                </div>
+
+                <h1 className="login-form__title">{isSignUp ? `Create ${isAdmin ? 'Admin' : 'Student'} Account` : `${isAdmin ? 'Admin' : 'Student'} Login`}</h1>
                 <p className="login-form__subtitle">
                     {isSignUp ? 'Join the community to access and share resources' : 'Enter your credentials to access the resource hub'}
                 </p>

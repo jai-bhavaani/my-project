@@ -14,6 +14,7 @@ function App() {
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRole] = useState<'student' | 'admin'>('student');
   const [currentView, setCurrentView] = useState<'marketplace' | 'upload' | 'admin'>('marketplace');
+  const [activeSemester, setActiveSemester] = useState<number | null>(null);
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
@@ -67,10 +68,10 @@ function App() {
 
   const renderContent = () => {
     switch (currentView) {
-      case 'marketplace': return <ResourceMarketplace />;
+      case 'marketplace': return <ResourceMarketplace activeSemester={activeSemester} />;
       case 'upload': return <StandaloneUploadPage />;
       case 'admin': return <UploadStatus />;
-      default: return <ResourceMarketplace />;
+      default: return <ResourceMarketplace activeSemester={activeSemester} />;
     }
   };
 
@@ -84,30 +85,23 @@ function App() {
         <AuthLayout
           visualColumn={<VisualColumn />}
           formColumn={
-            <div style={{ width: '100%' }}>
+            <div style={{ width: '100%', maxWidth: '440px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <LoginForm onLoginSuccess={() => { /* Subscription handles state change */ }} />
-
-              <div style={{ marginTop: '2rem', textAlign: 'center', backgroundColor: '#F3F4F6', padding: '1rem', borderRadius: '8px' }}>
-                <p style={{ fontSize: '0.875rem', color: '#4B5563', fontWeight: 'bold' }}>Testing Admin Portal?</p>
-                <p style={{ fontSize: '0.75rem', color: '#6B7280', marginTop: '0.25rem' }}>
-                  Create an account above, then go to your Supabase Dashboard &rarr; Table Editor &rarr; `profiles` table and change your role from `student` to `admin`. Refresh the page to see the Admin Tools.
-                </p>
-              </div>
             </div>
           }
         />
-      ) : userRole === 'student' ? (
-        <>
-          <AppShell
-            onLogout={handleLogout}
-            onNavigate={(view) => setCurrentView(view)}
-            currentView={currentView}
-          >
-            {renderContent()}
-          </AppShell>
-        </>
-      ) : (
+      ) : userRole === 'admin' ? (
         <AdminDashboard onLogout={handleLogout} />
+      ) : (
+        <AppShell
+          onLogout={handleLogout}
+          onNavigate={(view) => setCurrentView(view)}
+          currentView={currentView}
+          onSemesterSelect={(sem) => setActiveSemester(sem)}
+          activeSemester={activeSemester}
+        >
+          {renderContent()}
+        </AppShell>
       )}
     </>
   );

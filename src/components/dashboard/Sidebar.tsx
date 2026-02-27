@@ -13,9 +13,11 @@ interface SidebarProps {
     onLogout: () => void;
     onNavigate: (view: 'marketplace' | 'upload' | 'admin') => void;
     currentView: 'marketplace' | 'upload' | 'admin';
+    onSemesterSelect?: (semester: number | null) => void;
+    activeSemester?: number | null;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ onLogout, onNavigate, currentView }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ onLogout, onNavigate, currentView, onSemesterSelect, activeSemester }) => {
     return (
         <aside className="sidebar">
             <div className="sidebar__header">
@@ -29,8 +31,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onLogout, onNavigate, currentV
                     <ul className="sidebar__menu">
                         <li>
                             <button
-                                onClick={() => onNavigate('marketplace')}
-                                className={`sidebar__link ${currentView === 'marketplace' ? 'active' : ''}`}
+                                onClick={() => {
+                                    onNavigate('marketplace');
+                                    if (onSemesterSelect) onSemesterSelect(null); // Clear semester filter on main dashboard click
+                                }}
+                                className={`sidebar__link ${currentView === 'marketplace' && !activeSemester ? 'active' : ''}`}
                                 style={{ width: '100%', border: 'none', background: 'transparent', textAlign: 'left' }}
                             >
                                 <LayoutDashboard size={20} />
@@ -65,10 +70,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ onLogout, onNavigate, currentV
                     <ul className="sidebar__menu sidebar__menu--semesters">
                         {[1, 2, 3, 4, 5, 6, 7, 8].map((sem) => (
                             <li key={sem}>
-                                <a href="#" className="sidebar__link">
+                                <button
+                                    onClick={() => {
+                                        onNavigate('marketplace');
+                                        if (onSemesterSelect) onSemesterSelect(sem);
+                                    }}
+                                    className={`sidebar__link ${activeSemester === sem ? 'active' : ''}`}
+                                    style={{ width: '100%', border: 'none', background: 'transparent', textAlign: 'left' }}
+                                >
                                     <Book size={18} />
                                     <span>Semester {sem}</span>
-                                </a>
+                                </button>
                             </li>
                         ))}
                     </ul>

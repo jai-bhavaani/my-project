@@ -7,14 +7,18 @@ import { RightSidebar } from './RightSidebar';
 import { Pagination } from './Pagination';
 import { supabase } from '../../lib/supabase';
 
-export const ResourceMarketplace: React.FC = () => {
+interface ResourceMarketplaceProps {
+    activeSemester?: number | null;
+}
+
+export const ResourceMarketplace: React.FC<ResourceMarketplaceProps> = ({ activeSemester }) => {
     const [activeCategory, setActiveCategory] = useState("All");
     const [resources, setResources] = useState<ResourceData[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchResources();
-    }, [activeCategory]);
+    }, [activeCategory, activeSemester]);
 
     const fetchResources = async () => {
         setLoading(true);
@@ -43,6 +47,11 @@ export const ResourceMarketplace: React.FC = () => {
                 if (activeCategory === 'Lab Manuals') dbType = 'Lab';
 
                 query = query.eq('type', dbType);
+            }
+
+            // Apply semester filter if activeSemester is set
+            if (activeSemester) {
+                query = query.eq('semester', activeSemester);
             }
 
             const { data, error } = await query;

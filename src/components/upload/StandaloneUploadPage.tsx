@@ -4,11 +4,13 @@ import { UploadCloud, Link as LinkIcon, FileText, CheckCircle2 } from 'lucide-re
 import { supabase } from '../../lib/supabase';
 
 export const StandaloneUploadPage: React.FC = () => {
+    const [uploadMethod, setUploadMethod] = useState<'link' | 'file'>('file');
     const [activeType, setActiveType] = useState('Notes');
     const [title, setTitle] = useState('');
     const [semester, setSemester] = useState('');
     const [subject, setSubject] = useState('');
     const [url, setUrl] = useState('');
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
@@ -27,8 +29,20 @@ export const StandaloneUploadPage: React.FC = () => {
         setErrorMsg('');
         setSuccessMsg('');
 
-        if (!title || !semester || !subject || !url) {
-            setErrorMsg('Please fill in all required fields.');
+        if (!title || !semester || !subject) {
+            setErrorMsg('Please fill in all required resource details.');
+            setLoading(false);
+            return;
+        }
+
+        if (uploadMethod === 'link' && !url) {
+            setErrorMsg('Please provide an external URL.');
+            setLoading(false);
+            return;
+        }
+
+        if (uploadMethod === 'file' && !selectedFile) {
+            setErrorMsg('Please select a file to upload.');
             setLoading(false);
             return;
         }
@@ -40,18 +54,41 @@ export const StandaloneUploadPage: React.FC = () => {
         }
 
         try {
-            const { error } = await supabase.from('resources').insert([
+            let finalUrl = url;
+
+            // 1. Handle File Upload to Storage Bucket if applicable
+            if (uploadMethod === 'file' && selectedFile) {
+                const fileExt = selectedFile.name.split('.').pop();
+                const fileName = `${userId}_${Date.now()}.${fileExt}`;
+                const filePath = `uploads/${fileName}`;
+
+                const { error: uploadError } = await supabase.storage
+                    .from('resources_files')
+                    .upload(filePath, selectedFile);
+
+                if (uploadError) throw uploadError;
+
+                // 2. Get the public URL for the uploaded file
+                const { data: { publicUrl } } = supabase.storage
+                    .from('resources_files')
+                    .getPublicUrl(filePath);
+
+                finalUrl = publicUrl;
+            }
+
+            // 3. Insert the record into the resources table
+            const { error: insertError } = await supabase.from('resources').insert([
                 {
                     title,
                     semester: parseInt(semester, 10),
                     subject,
                     type: activeType,
-                    url,
+                    url: finalUrl,
                     uploader_id: userId
                 }
             ]);
 
-            if (error) throw error;
+            if (insertError) throw insertError;
 
             setSuccessMsg('Resource submitted successfully! It is now pending review.');
             // Reset form
@@ -59,6 +96,7 @@ export const StandaloneUploadPage: React.FC = () => {
             setSemester('');
             setSubject('');
             setUrl('');
+            setSelectedFile(null);
             setActiveType('Notes');
         } catch (err: any) {
             console.error('Upload Error:', err);
@@ -175,23 +213,68 @@ export const StandaloneUploadPage: React.FC = () => {
                     </div>
 
                     <div className="upload-section">
-                        <h2 className="upload-section__title">3. Add Link</h2>
-
-                        <div className="form-group">
-                            <label htmlFor="page-link">External URL <span className="required">*</span></label>
-                            <div className="input-with-icon">
-                                <LinkIcon size={20} className="input-icon-left" />
-                                <input
-                                    type="url"
-                                    id="page-link"
-                                    value={url}
-                                    onChange={(e) => setUrl(e.target.value)}
-                                    placeholder="Paste your shared Google Drive, Dropbox, or YouTube link here"
-                                    className="page-input has-icon"
-                                />
+                        <div className="upload-section__header-row">
+                            <h2 className="upload-section__title" style={{ borderBottom: 'none', marginBottom: 0 }}>3. Resource Content</h2>
+                            <div className="upload-method-toggle">
+                                <button
+                                    type="button"
+                                    className={`toggle-btn ${uploadMethod === 'file' ? 'active' : ''}`}
+                                    onClick={() => setUploadMethod('file')}
+                                >
+                                    Upload File
+                                </button>
+                                <button
+                                    type="button"
+                                    className={`toggle-btn ${uploadMethod === 'link' ? 'active' : ''}`}
+                                    onClick={() => setUploadMethod('link')}
+                                >
+                                    Link URL
+                                </button>
                             </div>
-                            <p className="form-help-text">Make sure the link permissions are set to "public" or "anyone with the link".</p>
                         </div>
+                        <div style={{ height: '2px', backgroundColor: 'var(--color-bg-canvas)', marginBottom: '0.5rem', marginTop: '0.25rem' }}></div>
+
+                        {uploadMethod === 'link' ? (
+                            <div className="form-group animation-fade-in">
+                                <label htmlFor="page-link">External URL <span className="required">*</span></label>
+                                <div className="input-with-icon">
+                                    <LinkIcon size={20} className="input-icon-left" />
+                                    <input
+                                        type="url"
+                                        id="page-link"
+                                        value={url}
+                                        onChange={(e) => setUrl(e.target.value)}
+                                        placeholder="Paste your shared Google Drive, Dropbox, or YouTube link here"
+                                        className="page-input has-icon"
+                                    />
+                                </div>
+                                <p className="form-help-text">Make sure the link permissions are set to "public" or "anyone with the link".</p>
+                            </div>
+                        ) : (
+                            <div className="form-group animation-fade-in">
+                                <label>Upload PDF / Document <span className="required">*</span></label>
+                                <div className="file-upload-dropzone">
+                                    <input
+                                        type="file"
+                                        id="page-file"
+                                        className="file-input-hidden"
+                                        onChange={(e) => {
+                                            if (e.target.files && e.target.files.length > 0) {
+                                                setSelectedFile(e.target.files[0]);
+                                            }
+                                        }}
+                                        accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png"
+                                    />
+                                    <label htmlFor="page-file" className="file-upload-label">
+                                        <UploadCloud size={32} className="file-upload-icon" />
+                                        <span className="file-upload-text">
+                                            {selectedFile ? selectedFile.name : 'Click to browse or drag and drop a file'}
+                                        </span>
+                                        <span className="file-upload-hint">Supported: PDF, DOCX, PPT, JPG, PNG (Max 10MB)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="upload-page__actions">

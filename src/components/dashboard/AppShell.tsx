@@ -8,9 +8,11 @@ interface AppShellProps {
     onLogout: () => void;
     onNavigate: (view: 'marketplace' | 'upload' | 'admin') => void;
     currentView: 'marketplace' | 'upload' | 'admin';
+    onSemesterSelect?: (semester: number | null) => void;
+    activeSemester?: number | null;
 }
 
-export const AppShell: React.FC<AppShellProps> = ({ children, onLogout, onNavigate, currentView }) => {
+export const AppShell: React.FC<AppShellProps> = ({ children, onLogout, onNavigate, currentView, onSemesterSelect, activeSemester }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const toggleMobileMenu = () => {
@@ -33,6 +35,8 @@ export const AppShell: React.FC<AppShellProps> = ({ children, onLogout, onNaviga
                     onLogout={onLogout}
                     onNavigate={onNavigate}
                     currentView={currentView}
+                    onSemesterSelect={onSemesterSelect}
+                    activeSemester={activeSemester}
                 />
             </div>
 
