@@ -1,0 +1,50 @@
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.app-shell__sidebar-wrapper {
+    z-index: 50;
+}
+
+.app-shell__main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    margin-left: 250px;
+    transition: margin-left var(--transition-normal);
+}
+
+.app-shell__content {
+    margin-top: 64px;
+    /* Offset for TopNav */
+    padding: 2rem;
+    flex: 1;
+    background-color: var(--color-bg-light);
+    /* Distinct from canvas to pop cards */
+}
+
+/* Mobile Overlays & Positioning */
+@media (max-width: 768px) {
+    .app-shell__main {
+        margin-left: 0;
+    }
+
+    .app-shell__sidebar-wrapper .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .app-shell__sidebar-wrapper.open .sidebar {
+        transform: translateX(0);
+    }
+
+    .app-shell__overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 40;
+        backdrop-filter: blur(4px);
+    }
+}

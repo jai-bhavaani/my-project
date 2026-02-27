@@ -1,0 +1,87 @@
+.marketplace {
+    width: 100%;
+    height: 100%;
+}
+
+.marketplace__header {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.marketplace__title {
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.marketplace__subtitle {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+}
+
+.marketplace__layout {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.marketplace__main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.marketplace__sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Placeholders for demo before implementation */
+.marketplace__tabs-placeholder,
+.marketplace__grid-placeholder,
+.marketplace__sidebar-placeholder,
+.marketplace__pagination-placeholder {
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-tertiary);
+    font-size: var(--font-size-sm);
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.marketplace__tabs-placeholder {
+    height: 60px;
+}
+
+.marketplace__grid-placeholder {
+    height: 400px;
+}
+
+.marketplace__pagination-placeholder {
+    height: 80px;
+}
+
+.marketplace__sidebar-placeholder {
+    height: 500px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    .marketplace__layout {
+        flex-direction: column;
+    }
+
+    .marketplace__sidebar {
+        width: 100%;
+    }
+}

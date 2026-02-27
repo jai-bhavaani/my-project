@@ -1,0 +1,199 @@
+.right-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.sidebar-panel {
+    background-color: var(--color-bg-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.sidebar-panel__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.sidebar-panel__title {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+}
+
+.sidebar-panel__header .sidebar-panel__title {
+    margin-bottom: 0;
+}
+
+.sidebar-panel__header-icon {
+    color: var(--color-primary);
+}
+
+/* Quick Stats Grid */
+.stats-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: var(--color-bg-light);
+    border-radius: var(--radius-md);
+    transition: transform var(--transition-fast);
+}
+
+.stat-card:hover {
+    transform: translateX(4px);
+}
+
+.stat-card__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-card__icon--primary {
+    background-color: rgba(79, 70, 229, 0.1);
+    color: var(--color-primary);
+}
+
+.stat-card__icon--secondary {
+    background-color: rgba(20, 184, 166, 0.1);
+    /* Teal */
+    color: #0D9488;
+}
+
+.stat-card__info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-card__value {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+.stat-card__label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+/* Trending List */
+.trending-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.trending-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.trending-item:hover {
+    background-color: var(--color-bg-light);
+}
+
+.trending-item__rank {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-bg-canvas);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    border-radius: var(--radius-full);
+}
+
+.trending-item:nth-child(1) .trending-item__rank {
+    background-color: #FEF08A;
+    /* Soft Yellow */
+    color: #854D0E;
+}
+
+.trending-item:nth-child(2) .trending-item__rank {
+    background-color: #E2E8F0;
+    /* Soft Silver */
+    color: #475569;
+}
+
+.trending-item:nth-child(3) .trending-item__rank {
+    background-color: #FED7AA;
+    /* Soft Bronze */
+    color: #9A3412;
+}
+
+.trending-item__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.trending-item__title {
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.15rem;
+}
+
+.trending-item__meta {
+    font-size: 0.7rem;
+    color: var(--color-text-tertiary);
+}
+
+.trending-item__arrow {
+    color: var(--color-border);
+    transition: transform var(--transition-fast);
+}
+
+.trending-item:hover .trending-item__arrow {
+    transform: translateX(2px);
+    color: var(--color-primary);
+}
+
+.sidebar-panel__action {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 0.75rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.sidebar-panel__action:hover {
+    background-color: var(--color-bg-light);
+    border-color: var(--color-text-tertiary);
+}

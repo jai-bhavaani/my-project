@@ -1,0 +1,31 @@
+.auth-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.auth-layout__visual {
+    display: none;
+}
+
+.auth-layout__form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    background-color: var(--color-bg-canvas);
+}
+
+@media (min-width: 1024px) {
+    .auth-layout__visual {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-bg-light);
+        position: relative;
+        overflow: hidden;
+    }
+}
